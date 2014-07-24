@@ -27,4 +27,14 @@
         android:layout_alignParentStart="true"
         android:layout_toLeftOf="@+id/sendButton" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/statusTextView"
+        android:layout_alignParentTop="true"
+        android:visibility="visible"
+        android:background="@android:color/white"
+        android:textAppearance="@android:color/primary_text_dark"
+        android:textAllCaps="false" />
+
 </RelativeLayout>

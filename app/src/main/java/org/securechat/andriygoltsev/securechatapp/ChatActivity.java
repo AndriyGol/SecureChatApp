@@ -1,18 +1,19 @@
 package org.securechat.andriygoltsev.securechatapp;
 
-import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.*;
 import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.securechat.andriygoltsev.securechatapp.crypt.Test;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.ContentView;
@@ -25,27 +26,83 @@ public class ChatActivity extends RoboActivity {
     @InjectView(R.id.sendButton)
     private Button sendButton;
 
-    @InjectView(R.id.textView)
-    private TextView textView;
+    @InjectView(R.id.editSendText)
+    private EditText textView;
+
+    @InjectView(R.id.statusTextView)
+    private TextView statusTextView;
+
+    private Chat chat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_chat);
-//        if (savedInstanceState == null) {
-//            getFragmentManager().beginTransaction()
-//                    .add(R.id.container, new PlaceholderFragment())
-//                    .commit();
-//        }
-
+        SmackAndroid.init(getApplicationContext());
+        init();
         sendButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                textView.setText("Hello there");
+                //textView.setText("Hello there");
+
+                try {
+                    (new Test()).testMultipleSessions();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if(chat != null) {
+                    try {
+                        String text = textView.getText().toString();
+                        chat.sendMessage(text);
+                        statusTextView.append(text + '\n');
+                    }
+                    catch (SmackException.NotConnectedException e){
+
+                    }
+                    catch(XMPPException e){
+
+                    }
+                }
+                textView.setText("");
             }
         });
     }
 
+    private void init(){
+        SASLAuthentication.supportSASLMechanism("DIGEST-MD5");
+        ConnectionConfiguration config = new ConnectionConfiguration("jabber.iitsp.com",5222);
+        config.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
+        config.setReconnectionAllowed(true);
+        config.setDebuggerEnabled(true);
+        //   config.setS( true );
+
+        XMPPConnection connection = new XMPPTCPConnection(config);
+        try {
+
+            //connection.
+            connection.connect();
+            connection.login("andrey1", "Andrey1");
+            chat = ChatManager.getInstanceFor(connection).createChat("andrey2@jabber.iitsp.com", new MessageListener() {
+                @Override
+                public void processMessage(Chat chat, Message message) {
+                    setChatText(message.getBody());
+                }
+            });
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void setChatText(final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                statusTextView.append(text + '\n');
+            }
+        });
+    }
 
 //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
