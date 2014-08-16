@@ -24,10 +24,8 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
-import org.securechat.andriygoltsev.securechatapp.crypt.Connection;
-import org.securechat.andriygoltsev.securechatapp.crypt.DummyClient;
-import org.securechat.andriygoltsev.securechatapp.crypt.Server;
-import org.securechat.andriygoltsev.securechatapp.crypt.Test;
+import org.securechat.andriygoltsev.securechatapp.crypt.*;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +51,7 @@ public class ChatActivity extends RoboActivity {
 
     private Server server;
     private Connection secureConnection;
-    private DummyClient client1;
+    private SecureClient client1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +61,6 @@ public class ChatActivity extends RoboActivity {
         sendButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                //textView.setText("Hello there");
-//                try {
-//                    (new Test()).testMultipleSessions();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
                 String text = textView.getText().toString();
                 if(sendOverChat(text)) {
                     statusTextView.append(text + '\n');
@@ -105,46 +97,46 @@ public class ChatActivity extends RoboActivity {
 
         final XMPPConnection connection = new XMPPTCPConnection(config);
 
-        try {
-
-            //connection.
-            connection.connect();
-            connection.login("andrey1", "Andrey1");
-
-            Presence presence = new Presence(Presence.Type.available);
-            presence.setMode(Presence.Mode.available);
-            presence.setTo("andrey2@jabber.iitsp.com");
-            presence.setStatus("I am here");
-            connection.sendPacket(presence);
-
-
-
-            client1 = new DummyClient("andrey1@jabber.iitsp.com");
-            client1.setPolicy(new OtrPolicyImpl(OtrPolicy.ALLOW_V2 | OtrPolicy.ALLOW_V3
-                    | OtrPolicy.ERROR_START_AKE));
-            server = new SecureServer(connection,client1);
-
-            client1.connect(server);
-            client1.send("andrey2@jabber.iitsp.com", "<p>?OTRv23?\n" +
-                    "<span style=\"font-weight: bold;\">Bob@Wonderland/</span> has requested an <a href=\"http://otr.cypherpunks.ca/\">Off-the-Record private conversation</a>. However, you do not have a plugin to support that.\n" +
-                    "See <a href=\"http://otr.cypherpunks.ca/\">http://otr.cypherpunks.ca/</a> for more information.</p>");
-
-            connection.addPacketListener(new PacketListener() {
-                @Override
-                public void processPacket(Packet packet) throws SmackException.NotConnectedException {
-                    Log.w("---------------->", packet.toXML().toString());
-                    // Log.w("---------------->", packet.getXmlns());
-                }
-            }, new PacketFilter() {
-                @Override
-                public boolean accept(Packet packet) {
-                    return true;
-                }
-            });
-        }
-        catch (Exception e){
-            Log.e("---------------->","ERROR",e);
-        }
+//        try {
+//
+//            //connection.
+//            connection.connect();
+//            connection.login("andrey1", "Andrey1");
+//
+//            Presence presence = new Presence(Presence.Type.available);
+//            presence.setMode(Presence.Mode.available);
+//            presence.setTo("andrey2@jabber.iitsp.com");
+//            presence.setStatus("I am here");
+//            connection.sendPacket(presence);
+//
+//
+//
+//            client1 = new SecureClient("andrey1@jabber.iitsp.com");
+//            client1.setPolicy(new OtrPolicyImpl(OtrPolicy.ALLOW_V2 | OtrPolicy.ALLOW_V3
+//                    | OtrPolicy.ERROR_START_AKE));
+//            server = new SecureServer(connection,client1);
+//
+//            client1.connect(server);
+//            client1.send("andrey2@jabber.iitsp.com", "<p>?OTRv23?\n" +
+//                    "<span style=\"font-weight: bold;\">Bob@Wonderland/</span> has requested an <a href=\"http://otr.cypherpunks.ca/\">Off-the-Record private conversation</a>. However, you do not have a plugin to support that.\n" +
+//                    "See <a href=\"http://otr.cypherpunks.ca/\">http://otr.cypherpunks.ca/</a> for more information.</p>");
+//
+//            connection.addPacketListener(new PacketListener() {
+//                @Override
+//                public void processPacket(Packet packet) throws SmackException.NotConnectedException {
+//                    Log.w("---------------->", packet.toXML().toString());
+//                    // Log.w("---------------->", packet.getXmlns());
+//                }
+//            }, new PacketFilter() {
+//                @Override
+//                public boolean accept(Packet packet) {
+//                    return true;
+//                }
+//            });
+//        }
+//        catch (Exception e){
+//            Log.e("---------------->","ERROR",e);
+//        }
 
     }
 
@@ -158,62 +150,62 @@ public class ChatActivity extends RoboActivity {
     }
 
 
-    class SecureServer implements Server {
-
-        private final Map<String, Connection> clients = new HashMap<String, Connection>();
-        private int conCount = 0;
-        private final XMPPConnection connection;
-        private Chat chat;
-        private final DummyClient client;
-
-        public SecureServer(XMPPConnection connection, DummyClient client){
-            this.connection = connection;
-            this.client = client;
-        }
-
-        @Override
-        public void send(Connection sender, String recipient, String msg) throws OtrException {
-
-            try {
-                chat.sendMessage(msg);
-            }
-            catch (Exception e){
-                Log.e("---------------->","ERROR",e);
-            }
-
-        }
-
-        @Override
-        public synchronized Connection connect(final DummyClient client) {
-            // Update the active connection.
-            //clients.put(client.getAccount(), con);
-            String connectionName = client.getAccount() + "." + conCount++;
-            final Connection con = new Connection(this, client, connectionName);
-            try {
-
-                chat = ChatManager.getInstanceFor(connection).createChat("andrey2@jabber.iitsp.com", new MessageListener() {
-                    @Override
-                    public void processMessage(Chat chat, Message message) {
-                        try {
-                            con.receive(message.getFrom(), message.getBody());
-                            org.securechat.andriygoltsev.securechatapp.crypt.Message m = client.pollReceivedMessage();
-                            setChatText(m.getSender(), m.getContent());
-                        }
-                        catch (Exception e){
-                            Log.e("---------------->","ERROR",e);
-                        }
-                    }
-                });
-
-            }
-            catch (Exception e){
-                Log.e("---------------->","ERROR",e);
-            }
-
-            return con;
-        }
-
-    }
+//    class SecureServer implements Server {
+//
+//        private final Map<String, Connection> clients = new HashMap<String, Connection>();
+//        private int conCount = 0;
+//        private final XMPPConnection connection;
+//        private Chat chat;
+//        private final DummyClient client;
+//
+//        public SecureServer(XMPPConnection connection, DummyClient client){
+//            this.connection = connection;
+//            this.client = client;
+//        }
+//
+//        @Override
+//        public void send(Connection sender, String recipient, String msg) throws OtrException {
+//
+//            try {
+//                chat.sendMessage(msg);
+//            }
+//            catch (Exception e){
+//                Log.e("---------------->","ERROR",e);
+//            }
+//
+//        }
+//
+//        @Override
+//        public synchronized Connection connect(final DummyClient client) {
+//            // Update the active connection.
+//            //clients.put(client.getAccount(), con);
+//            String connectionName = client.getAccount() + "." + conCount++;
+//            final Connection con = new Connection(this, client, connectionName);
+//            try {
+//
+//                chat = ChatManager.getInstanceFor(connection).createChat("andrey2@jabber.iitsp.com", new MessageListener() {
+//                    @Override
+//                    public void processMessage(Chat chat, Message message) {
+//                        try {
+//                            con.receive(message.getFrom(), message.getBody());
+//                            org.securechat.andriygoltsev.securechatapp.crypt.Message m = client.pollReceivedMessage();
+//                            setChatText(m.getSender(), m.getContent());
+//                        }
+//                        catch (Exception e){
+//                            Log.e("---------------->","ERROR",e);
+//                        }
+//                    }
+//                });
+//
+//            }
+//            catch (Exception e){
+//                Log.e("---------------->","ERROR",e);
+//            }
+//
+//            return con;
+//        }
+//
+//    }
 
 
 }

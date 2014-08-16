@@ -17,6 +17,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        mavenLocal()
+        // Not needed since I moved those dependencies into libs
+        // mavenLocal()
     }
 }
