@@ -27,14 +27,153 @@
         android:layout_alignParentStart="true"
         android:layout_toLeftOf="@+id/sendButton" />
 
-    <TextView
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/editSendText"
+        android:layout_alignStart="@+id/editSendText"
+        android:id="@+id/signInLayout"
+        android:layout_above="@+id/chatLayout">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="andrey1"
+            android:ems="10"
+            android:id="@+id/name"
+            android:layout_below="@+id/textView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Password"
+            android:id="@+id/textView2"
+            android:layout_below="@+id/name"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:ems="10"
+            android:id="@+id/password"
+            android:text="Andrey1"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/server"
+            android:text="jabber.iitsp.com"
+            android:layout_below="@+id/textView3"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/port"
+            android:text="5222"
+            android:layout_below="@+id/textView3"
+            android:layout_toRightOf="@+id/server"
+            android:layout_toLeftOf="@+id/connect" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connect"
+            android:id="@+id/connect"
+            android:layout_below="@+id/textView3"
+            android:layout_toRightOf="@+id/password" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Account Name"
+            android:id="@+id/textView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="XMPP Server and Port Number"
+            android:id="@+id/textView3"
+            android:layout_below="@+id/password"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Chat With"
+            android:id="@+id/textView4"
+            android:layout_below="@+id/connect"
+            android:layout_alignRight="@+id/textView2"
+            android:layout_alignEnd="@+id/textView2" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:text="andrey2@jabber.iitsp.com"
+            android:ems="10"
+            android:id="@+id/chatWith"
+            android:layout_below="@+id/textView4"
+            android:layout_alignLeft="@+id/textView4"
+            android:layout_alignStart="@+id/textView4" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/chatLayout"
+        android:layout_alignLeft="@+id/editSendText"
+        android:layout_alignStart="@+id/editSendText"
+        android:id="@+id/chatLayout"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/sendButton"
+        android:verticalScrollbarPosition="right"
+        >
+
+        <EditText
+        android:editable="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/statusTextView"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/disconnectButton"
         android:visibility="visible"
         android:background="@android:color/white"
         android:textAppearance="@android:color/primary_text_dark"
         android:textAllCaps="false" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Disconnect"
+            android:id="@+id/disconnectButton"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+
+
 
 </RelativeLayout>

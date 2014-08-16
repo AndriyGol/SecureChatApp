@@ -1,5 +1,7 @@
 package org.securechat.andriygoltsev.securechatapp.crypt;
 
+import android.util.Log;
+
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ChatManager;
 import org.jivesoftware.smack.MessageListener;
@@ -7,6 +9,7 @@ import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Presence;
 import org.securechat.andriygoltsev.securechatapp.crypt.SecureClient;
 import org.securechat.andriygoltsev.securechatapp.crypt.Server;
 
@@ -46,7 +49,14 @@ public class Connection {
 		this.sentMessage = msg;
 		
 		if (chat == null) {
+
 			try {
+                Presence presence = new Presence(Presence.Type.available);
+                presence.setMode(Presence.Mode.available);
+                presence.setTo(recipient);
+                presence.setStatus("I am here");
+                xmppConnection.sendPacket(presence);
+
 				setChat(ChatManager.getInstanceFor(xmppConnection).createChat(
 						recipient, new MessageListener() {
 
@@ -55,12 +65,12 @@ public class Connection {
 								try {
 									receive(msg.getFrom(), msg.getBody());
 								} catch (OtrException e) {
-									// TODO
+                                    Log.e("---------------->","ERROR",e);
 								}
 							}
 						}));
 			} catch (Exception e) {
-				// Log.e("---------------->","ERROR",e);
+				Log.e("---------------->","ERROR",e);
 			}
 		}
 		
@@ -68,9 +78,9 @@ public class Connection {
 		try {
 			getChat().sendMessage(msg);
 		} catch (NotConnectedException e) {
-			// Log.e("---------------->","ERROR",e);
+			Log.e("---------------->", "ERROR", e);
 		} catch (XMPPException e) {
-			// Log.e("---------------->","ERROR",e);
+			Log.e("---------------->","ERROR",e);
 		}
 	}
 

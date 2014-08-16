@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SecureChatApp.iml" filepath="$PROJECT_DIR$/SecureChatApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/secureapp.iml" filepath="$PROJECT_DIR$/secureapp.iml" />
     </modules>
   </component>
 </project>
