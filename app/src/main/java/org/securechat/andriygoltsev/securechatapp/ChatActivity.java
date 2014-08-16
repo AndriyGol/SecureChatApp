@@ -172,27 +172,6 @@ public class ChatActivity extends RoboActivity {
     }
 
     private void init() {
-        SASLAuthentication.supportSASLMechanism("DIGEST-MD5");
-        ConnectionConfiguration config = new ConnectionConfiguration("jabber.iitsp.com",5222);
-        config.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
-        config.setReconnectionAllowed(true);
-//        config.setDebuggerEnabled(true);
-        config.setSendPresence(true);
-        //   config.setS( true );
-
-        final XMPPConnection connection = new XMPPTCPConnection(config);
-
-        try {
-            connection.connect();
-        } catch (SmackException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XMPPException e) {
-            e.printStackTrace();
-        }
-
-
     }
 
     private void initHandlers(){
@@ -227,10 +206,7 @@ public class ChatActivity extends RoboActivity {
     }
 
     private void connectXMPP(ConnectionParams params){
-
         SASLAuthentication.supportSASLMechanism("DIGEST-MD5");
-
-
         try {
             ConnectionConfiguration config = new ConnectionConfiguration(params.getServerName(), new Integer(params.getPort()));
             config.setSecurityMode(ConnectionConfiguration.SecurityMode.required);
@@ -240,22 +216,10 @@ public class ChatActivity extends RoboActivity {
             xmppConnection = new XMPPTCPConnection(config);
             xmppConnection.connect();
             xmppConnection.login(params.getUserName(), params.getPassword());
-            Presence presence = new Presence(Presence.Type.available);
-            presence.setMode(Presence.Mode.available);
-            presence.setTo("andrey2@jabber.iitsp.com");
-            presence.setStatus("I am here");
-            xmppConnection.sendPacket(presence);
-
-        } catch (SmackException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XMPPException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e){
-
         }
-
+        catch (Exception e){
+            Log.e("---------------->","ERROR",e);
+        }
 
         params.getChatWith();
     }

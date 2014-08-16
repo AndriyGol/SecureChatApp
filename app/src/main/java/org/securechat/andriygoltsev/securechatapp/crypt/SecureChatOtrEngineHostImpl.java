@@ -13,7 +13,7 @@ import net.java.otr4j.session.InstanceTag;
 import net.java.otr4j.session.SessionID;
 
 // Copied from OTR lib
-class SecureChatOtrEngineHostImpl implements OtrEngineHost {
+public class SecureChatOtrEngineHostImpl implements OtrEngineHost {
 
 	/**
 	 * 
