@@ -68,8 +68,10 @@
     <orderEntry type="library" exported="" name="guice-3.0-no_aop" level="project" />
     <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
     <orderEntry type="library" exported="" name="aopalliance-1.0" level="project" />
+    <orderEntry type="library" exported="" name="sc-light-jdk15on-1.47.0.3" level="project" />
     <orderEntry type="library" exported="" name="asmack-android-8-4.0.0" level="project" />
     <orderEntry type="library" exported="" name="otr4j-0.21" level="project" />
+    <orderEntry type="library" exported="" name="scprov-jdk15on-1.47.0.3" level="project" />
   </component>
 </module>
 

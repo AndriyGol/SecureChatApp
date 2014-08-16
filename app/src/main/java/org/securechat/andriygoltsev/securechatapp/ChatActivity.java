@@ -81,6 +81,8 @@ public class ChatActivity extends RoboActivity {
 
     private ConnectionParams connectionParams;
 
+    private Runnable messageListener;
+
     static public class ConnectionParams {
 
         private String port;
@@ -155,22 +157,6 @@ public class ChatActivity extends RoboActivity {
 
     }
 
-    private boolean sendOverChat(String msg){
-        boolean success = false;
-        if(server != null) {
-      //      try {
-//                String outgoingMessage = session.transformSending(msg);
-//                chat.sendMessage(outgoingMessage);
-//                client1.send("andrey2@jabber.iitsp.com", msg);
-                success = true;
-//            }
-//            catch (OtrException e) {
-//
-//            }
-        }
-        return success;
-    }
-
     private void init() {
     }
 
@@ -178,14 +164,22 @@ public class ChatActivity extends RoboActivity {
         sendButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                try {
+                    secureClient.send(connectionParams.getChatWith(), textView.getText().toString());
+                    setChatText("me",textView.getText().toString());
+                    textView.setText("");
+                }
+                catch (Exception e){
+                    Log.e("---------------->","ERROR",e);
+                    disconnect();
+                }
             }
         });
 
         disconnectButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                disconnect();
             }
         });
 
@@ -205,6 +199,20 @@ public class ChatActivity extends RoboActivity {
         });
     }
 
+    private void disconnect(){
+        // go to sign in screen
+        setChatView(false);
+        statusTextView.setText("");
+        messageListener = null;
+        try {
+            secureClient.exit();
+        }
+        catch (Exception e){
+            Log.e("---------------->","ERROR",e);
+        }
+        secureClient = null;
+    }
+
     private void connectXMPP(ConnectionParams params){
         SASLAuthentication.supportSASLMechanism("DIGEST-MD5");
         try {
@@ -216,12 +224,32 @@ public class ChatActivity extends RoboActivity {
             xmppConnection = new XMPPTCPConnection(config);
             xmppConnection.connect();
             xmppConnection.login(params.getUserName(), params.getPassword());
+
+            secureClient = new SecureClient(params.getUserName());
+            secureClient.setPolicy(new OtrPolicyImpl(OtrPolicy.ALLOW_V2 | OtrPolicy.ALLOW_V3 | OtrPolicy.ERROR_START_AKE));
+            secureClient.connect(new SecureServer(xmppConnection));
+            secureClient.send(params.getChatWith(), "?OTRv23?\n" + " Lets start OTR???");
+
+            // handshake
+            secureClient.pollReceivedMessage();
+            secureClient.pollReceivedMessage();
+
+            new Thread(messageListener = new Runnable() {
+                @Override
+                public void run() {
+                    while(secureClient != null){
+                        ProcessedMessage m = secureClient.pollReceivedMessage();
+                        setChatText(m.getSender(), m.getContent());
+                    }
+                }
+            }).start();
+
+
+            setChatView(true);
         }
         catch (Exception e){
             Log.e("---------------->","ERROR",e);
         }
-
-        params.getChatWith();
     }
 
     private void setChatText(final String userName, final String text) {
@@ -243,12 +271,12 @@ public class ChatActivity extends RoboActivity {
         if(chatView){
             signInLayout.setVisibility(View.GONE);
             chatLayout.setVisibility(View.VISIBLE);
-            sendButton.setEnabled(false);
+            sendButton.setEnabled(true);
         }
         else {
             signInLayout.setVisibility(View.VISIBLE);
             chatLayout.setVisibility(View.GONE);
-            sendButton.setEnabled(true);
+            sendButton.setEnabled(false);
         }
 
     }

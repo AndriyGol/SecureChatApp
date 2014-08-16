@@ -18,7 +18,8 @@ import org.securechat.andriygoltsev.securechatapp.crypt.Server;
 public class SecureClient {
 
 	// TODO fix for Android
-	static Logger logger = Logger.getGlobal();
+	static Logger logger = Logger.getLogger("Logger");
+
 	private final String account;
 	private Session session;
 	OtrPolicy policy;
